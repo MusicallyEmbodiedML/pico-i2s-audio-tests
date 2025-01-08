@@ -39,7 +39,7 @@ I2S FAST_MEM i2s(OUTPUT);
 #define pWS (pBCLK+1)
 #define pMCLK 22  // optional MCLK pin
 
-const int FAST_MEM frequency = 50; // frequency of square wave in Hz
+const int FAST_MEM frequency = 200; // frequency of square wave in Hz
 const int FAST_MEM sampleRate = 48000; // minimum for many i2s DACs
 const int FAST_MEM bitsPerSample = 32;
 const int FAST_MEM amplitude = 1 << (bitsPerSample - 2); // amplitude of square wave = 1/2 of maximum
