@@ -49,8 +49,8 @@
 // 3:2	SYS_FS		Sets the internal system sample rate (default=2)
 //				0x0 = 32 kHz
 //				0x1 = 44.1 kHz
-//				0x2 = 48 kHz
-//				0x3 = 96 kHz                  
+//				0x2 = 48 kHz               
+//				0x3 = 96 kHz
 // 1:0	MCLK_FREQ	Identifies incoming SYS_MCLK frequency and if the PLL should be used    
 //				0x0 = 256*Fs
 //				0x1 = 384*Fs
@@ -79,7 +79,7 @@
 //				the SGTL5000 must be a master of the I2S port (MS==1)
 // 6	SCLK_INV	Sets the edge that data (input and output) is clocked in on for I2S_SCLK
 //				0x0 = data is valid on rising edge of I2S_SCLK
-//				0x1 = data is valid on falling edge of I2S_SCLK
+//				0x1 = data is valid on falling edge of I2S_SCLK              
 // 5:4	DLEN		I2S data length (default=1)
 //				0x0 = 32 bits (only valid when SCLKFREQ=0),
 //					not valid for Right Justified Mode
@@ -575,19 +575,21 @@ bool AudioControlSGTL5000::enable(const unsigned extMCLK, const uint32_t pllFreq
 	
 	if (extMCLK > 0) { 
 		//SGTL is I2S Master
-		write(CHIP_CLK_CTRL, 0x0004 | 0x03);  // 44.1 kHz, 256*Fs, use PLL
-		write(CHIP_I2S_CTRL, 0x0030 | (1<<7)); // SCLK=64*Fs, 16bit, I2S format
+    
+		write(CHIP_CLK_CTRL, 0b001011 );  // 48 kHz, 256*Fs, use PLL
+		// write(CHIP_CLK_CTRL, 0x0004 | 0x03);  // 44.1 kHz, 256*Fs, use PLL
+		// write(CHIP_I2S_CTRL, 0x0030 | (1<<7)); // SCLK=64*Fs, 16bit, I2S format		write(CHIP_I2S_CTRL, 0x0030 | (1<<7)); // SCLK=64*Fs, 16bit, I2S format
+		write(CHIP_I2S_CTRL, 0b00000000); // SCLK=64*Fs, 32bit, I2S format
+
+    
 	} else {
 		//SGTL is I2S Slave
 		// write(CHIP_CLK_CTRL, 0x0004);  // 44.1 kHz, 256*Fs
 		// write(CHIP_CLK_CTRL, 0b01001);  // 48 kHz, 384*Fs
-		// write(CHIP_CLK_CTRL, 0b01010);  // 48 kHz, 512*Fs
-		write(CHIP_CLK_CTRL, 0b001000);  // 48 kHz, 256*Fs
-    
+		write(CHIP_CLK_CTRL, 0b01010);  // 48 kHz, 512*Fs
     
 
 		// write(CHIP_I2S_CTRL, 0x0030); // SCLK=64*Fs, 16bit, I2S format
-
 		write(CHIP_I2S_CTRL, 0x0000); // SCLK=64*Fs, 32bit, I2S format
 		// write(CHIP_I2S_CTRL, 0b0010); // SCLK=64*Fs, 32bit, I2S format, lralign
     

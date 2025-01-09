@@ -1,8 +1,5 @@
-
-
 /*
 this tests i2s using pico2w and the teensy audio board rev D
-note: use the top left ground pin next to the headphone output
 */
 
 #include "control_sgtl5000.h"
@@ -31,15 +28,15 @@ static __attribute__((aligned(8))) pio_i2s i2s;
 
 maxiOsc osc, osc2;
 
-float f1=20, f2=7500+20;
+float f1=20, f2=2000;
 
 static void process_audio(const int32_t* input, int32_t* output, size_t num_frames) {
     // Just copy the input to the output
     for (size_t i = 0; i < num_frames; i++) {
         // output[i] = input[i];
 
-        output[i*2] = input[i*2];
-        output[(i*2) + 1] = input[(i*2) + 1];
+        // output[i*2] = input[i*2];
+        // output[(i*2) + 1] = input[(i*2) + 1];
 
         // output[i*2] = 0;
         // output[(i*2) + 1] = 0;
@@ -49,17 +46,17 @@ static void process_audio(const int32_t* input, int32_t* output, size_t num_fram
         //   sample = -1 * sample;
         // }
 
-        // output[i*2] = osc.sinewave(f1) * sample;
-        // output[(i*2) + 1] = osc2.sinewave(f2) * sample;
-        // // count++;
-        // f1 *= 1.00001;
-        // f2 *= 1.00001;
-        // if (f1 > 15000) {
-        //   f1 = 20.0;
-        // }
-        // if (f2 > 15000) {
-        //   f2 = 20.0;
-        // }
+        output[i*2] = osc.sinewave(f1) * sample;
+        output[(i*2) + 1] = osc2.sinewave(f2) * sample;
+        // count++;
+        f1 *= 1.00001;
+        f2 *= 1.00001;
+        if (f1 > 15000) {
+          f1 = 20.0;
+        }
+        if (f2 > 15000) {
+          f2 = 20.0;
+        }
 
     }
 }
@@ -88,7 +85,7 @@ void setup() {
   }
   Serial.println("I2S test");
 
-  maxiSettings::setup(sampleRate, 2, 64);
+  maxiSettings::setup(48000, 2, 64);
 
 
   set_sys_clock_khz(132000, true);
@@ -108,7 +105,7 @@ void setup() {
     bool     sck_enable;
 } i2s_config;
   const i2s_config i2s_config_default = {48000, 256, 32, 
-  10, //master clock
+  10, //sck
   6,  //dout
   7, //din
   8, clock base bclk (9: lrclock)
@@ -119,15 +116,15 @@ void setup() {
   picoI2SConfig.fs = sampleRate;
   picoI2SConfig.bit_depth = bitsPerSample;
   picoI2SConfig.sck_mult=256;
-  i2s_program_start_synched(pio0, &picoI2SConfig, dma_i2s_in_handler, &i2s);
+  // i2s_program_start_synched(pio0, &picoI2SConfig, dma_i2s_in_handler, &i2s);
+  i2s_program_start_slaved(pio0, &picoI2SConfig, dma_i2s_in_handler, &i2s);
 
   // init i2c
-  codecCtl.enable();
-  codecCtl.volume(0.5); //headphone
-
+  codecCtl.enable(12288000);   //todo: automate param
+  codecCtl.volume(1);
   codecCtl.inputSelect(AUDIO_INPUT_LINEIN);
-  codecCtl.lineInLevel(7);
-  // codecCtl.audioProcessorDisable();
+  codecCtl.lineInLevel(0);
+  codecCtl.audioProcessorDisable();
 
   
 
