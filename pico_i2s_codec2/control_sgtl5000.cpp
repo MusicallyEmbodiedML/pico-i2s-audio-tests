@@ -520,8 +520,8 @@ bool AudioControlSGTL5000::enable(void) {
 bool AudioControlSGTL5000::enable(const unsigned extMCLK, const uint32_t pllFreq)
 {
 
-  Wire.setSDA(4);
-  Wire.setSCL(5);
+  Wire.setSDA(0);
+  Wire.setSCL(1);
 	Wire.begin();
 	delay(5);
 	

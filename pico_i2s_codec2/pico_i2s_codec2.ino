@@ -38,8 +38,8 @@ static void process_audio(const int32_t* input, int32_t* output, size_t num_fram
     for (size_t i = 0; i < num_frames; i++) {
         // output[i] = input[i];
 
-        output[i*2] = input[i*2];
-        output[(i*2) + 1] = input[(i*2) + 1];
+        // output[i*2] = input[i*2];
+        // output[(i*2) + 1] = input[(i*2) + 1];
 
         // output[i*2] = 0;
         // output[(i*2) + 1] = 0;
@@ -49,17 +49,17 @@ static void process_audio(const int32_t* input, int32_t* output, size_t num_fram
         //   sample = -1 * sample;
         // }
 
-        // output[i*2] = osc.sinewave(f1) * sample;
-        // output[(i*2) + 1] = osc2.sinewave(f2) * sample;
-        // // count++;
-        // f1 *= 1.00001;
-        // f2 *= 1.00001;
-        // if (f1 > 15000) {
-        //   f1 = 20.0;
-        // }
-        // if (f2 > 15000) {
-        //   f2 = 20.0;
-        // }
+        output[i*2] = osc.sinewave(f1) * sample;
+        output[(i*2) + 1] = osc2.sinewave(f2) * sample;
+        // count++;
+        f1 *= 1.00001;
+        f2 *= 1.00001;
+        if (f1 > 15000) {
+          f1 = 20.0;
+        }
+        if (f2 > 15000) {
+          f2 = 20.0;
+        }
 
     }
 }
